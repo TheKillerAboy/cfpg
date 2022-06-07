@@ -112,10 +112,14 @@ def resolve_contest(contest_str: str) -> ContestInfo:
     if contest_match := re.match(r"\d+", contest_str):
         return resolve_id(int(contest_match.group(0)))
 
-    if contest_match := re.match(r"CF-(\d+)(-DIV-(\d+))?", contest_str, re.IGNORECASE):
-        return resolve_cf(contest_match.group(1), contest_match.group(3))
+    if contest_match := re.match(
+        r"CF-(\d+)((-DIV)?-(\d+))?", contest_str, re.IGNORECASE
+    ):
+        return resolve_cf(contest_match.group(1), contest_match.group(4))
 
-    if contest_match := re.match(r"ECF-(\d+)(-DIV-(\d+))?", contest_str, re.IGNORECASE):
-        return resolve_ecf(contest_match.group(1), contest_match.group(3))
+    if contest_match := re.match(
+        r"ECF-(\d+)((-DIV)?-(\d+))?", contest_str, re.IGNORECASE
+    ):
+        return resolve_ecf(contest_match.group(1), contest_match.group(4))
 
     raise ContestStrResolveError(contest_str)

@@ -39,6 +39,7 @@ def test_get_content_history():
         ("CF-799-DIV-4", 1692, "CF-799-DIV-4"),
         ("CF-800-DIV-2", 1694, "CF-800-DIV-2"),
         ("CF-800-DIV-1", 1693, "CF-800-DIV-1"),
+        ("CF-800-1", 1693, "CF-800-DIV-1"),
         ("ECF-129", 1681, "ECF-129-DIV-2"),
     ],
 )
