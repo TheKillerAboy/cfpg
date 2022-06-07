@@ -64,7 +64,7 @@ class ContestStrResolveError(Exception):
         super().__init__(f"Unable to resolve contest string: `{contest_str}`")
 
 
-def resolve_with_div(contest_str, re_str, short_format, div=None, flags=0):
+def resolve_with_div(contest_str, re_str, short_format, flags=0):
     results = resolve_from_contest_history(re_str, flags=flags)
 
     if len(results) == 0:
@@ -85,8 +85,7 @@ def resolve_cf(cf, div=None) -> ContestInfo:
     return resolve_with_div(
         cf,
         rf"Codeforces Round #(?P<contest_id>{cf}) \(.*Div. (?P<contest_div>{div}).*\)",
-        "CF-{contest_id}-DIV-{contest_div}",
-        div=div,
+        "CF-{contest_id}-DIV-{contest_div}"
     )
 
 
@@ -95,8 +94,7 @@ def resolve_ecf(ecf, div=None) -> ContestInfo:
     return resolve_with_div(
         ecf,
         rf"Educational Codeforces Round (?P<contest_id>{ecf}) \(.*Div. (?P<contest_div>{div}).*\)",
-        "ECF-{contest_id}-DIV-{contest_div}",
-        div=div,
+        "ECF-{contest_id}-DIV-{contest_div}"
     )
 
 
