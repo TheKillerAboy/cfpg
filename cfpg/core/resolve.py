@@ -85,7 +85,7 @@ def resolve_cf(cf, div=None) -> ContestInfo:
     return resolve_with_div(
         cf,
         rf"Codeforces Round #(?P<contest_id>{cf}) \(.*Div. (?P<contest_div>{div}).*\)",
-        "CF-{contest_id}-DIV-{contest_div}"
+        "CF-{contest_id}-DIV-{contest_div}",
     )
 
 
@@ -94,7 +94,7 @@ def resolve_ecf(ecf, div=None) -> ContestInfo:
     return resolve_with_div(
         ecf,
         rf"Educational Codeforces Round (?P<contest_id>{ecf}) \(.*Div. (?P<contest_div>{div}).*\)",
-        "ECF-{contest_id}-DIV-{contest_div}"
+        "ECF-{contest_id}-DIV-{contest_div}",
     )
 
 
