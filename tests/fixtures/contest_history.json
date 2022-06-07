@@ -1,0 +1,88 @@
+[
+  {
+    "id": 1681,
+    "name": "Educational Codeforces Round 129 (Rated for Div. 2)",
+    "type": "ICPC",
+    "phase": "FINISHED",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1653316500,
+    "relativeTimeSeconds": 1308256,
+    "short_name": "ECF-129-DIV-2"
+  },
+  {
+    "id": 1696,
+    "name": "Codeforces Global Round 21",
+    "type": "CF",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1656167700,
+    "relativeTimeSeconds": -1542944
+  },
+  {
+    "id": 1695,
+    "name": "Codeforces Round #TBA (Div. 2)",
+    "type": "CF",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1655562900,
+    "relativeTimeSeconds": -938144
+  },
+  {
+    "id": 1693,
+    "name": "Codeforces Round #800 (Div. 1)",
+    "type": "CF",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1655390100,
+    "relativeTimeSeconds": -765344,
+    "short_name": "CF-800-DIV-1"
+  },
+  {
+    "id": 1694,
+    "name": "Codeforces Round #800 (Div. 2)",
+    "type": "CF",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1655390100,
+    "relativeTimeSeconds": -765344,
+    "short_name": "CF-800-DIV-2"
+  },
+  {
+    "id": 1692,
+    "name": "Codeforces Round #799 (Div. 4)",
+    "type": "ICPC",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 8100,
+    "startTimeSeconds": 1655217300,
+    "relativeTimeSeconds": -592544,
+    "short_name": "CF-799-DIV-4"
+  },
+  {
+    "id": 1697,
+    "name": "Educational Codeforces Round 130 (Rated for Div. 2)",
+    "type": "ICPC",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1655044500,
+    "relativeTimeSeconds": -419744,
+    "short_name": "ECF-130-DIV-2"
+  },
+  {
+    "id": 1689,
+    "name": "Codeforces Round #798 (Div. 2)",
+    "type": "CF",
+    "phase": "BEFORE",
+    "frozen": false,
+    "durationSeconds": 7200,
+    "startTimeSeconds": 1654878900,
+    "relativeTimeSeconds": -254144,
+    "short_name": "CF-798-DIV-2"
+  }
+]

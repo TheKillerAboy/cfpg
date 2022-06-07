@@ -1,87 +1,52 @@
-from concurrent.futures import Future, ThreadPoolExecutor
-from functools import lru_cache
+from dataclasses import dataclass
 import re
 from textwrap import indent
-from threading import Lock
-from typing import Dict, List, Tuple
-from bs4 import BeautifulSoup, Tag
-
-import requests
+from typing import List
+from . import api_call
+from datetime import datetime, timedelta
 
 
-def get_contest_history_for_page(page_id: int) -> Tuple[Dict[str, int], int]:
-    out = {}
+@dataclass
+class ContestInfo:
+    id: int
+    name: str
+    type: str
+    phase: str
+    frozen: bool
+    durationSeconds: timedelta
+    startTimeSeconds: datetime
+    relativeTimeSeconds: timedelta
+    short_name: str
 
-    res = requests.get(f"https://codeforces.com/contests/page/{page_id}?complete=true")
+    @classmethod
+    def build(cls, raw):
+        raw["durationSeconds"] = timedelta(seconds=raw["durationSeconds"])
+        raw["startTimeSeconds"] = datetime.fromtimestamp(raw["startTimeSeconds"])
+        raw["relativeTimeSeconds"] = timedelta(seconds=raw["relativeTimeSeconds"])
+        if "short_name" not in raw:
+            raw["short_name"] = str(raw["id"])
 
-    soup = BeautifulSoup(res.content, "html.parser")
-
-    contests_table_div = soup.find("div.contests-table")
-
-    print(soup)
-
-    for contest_tr in contests_table_div.find_all("tr"):
-        if contest_tr.has_attr("data-contestid"):
-            name_td: Tag = contest_tr.find("td")
-            display_name = name_td.text
-            id_ext = name_td.find("a")["href"]
-
-            id = int(re.match("/contest/(\d+)", id_ext).group(1))
-
-            out[display_name] = id
-
-    # gather max page
-    pagination_div = soup.find("div.pagination")
-    last_page_li = pagination_div.find_all("li")[-1]
-    last_page = int(last_page_li.find("span")["pageindex"])
-
-    return out, last_page
+        return ContestInfo(**raw)
 
 
-@lru_cache
-def get_content_history() -> Dict[str, int]:
-    lock = Lock()
-    max_page = 50
+def get_content_history() -> List[ContestInfo]:
+    data = api_call("contest.list", params={"gym": False})
 
-    def wrapper(page_id: int) -> Dict[str, int]:
-        with lock:
-            if page_id > max_page:
-                return {}
-
-        out, last_page = get_contest_history_for_page(page_id)
-
-        with lock:
-            max_page = last_page
-
-        return out
-
-    futures: List[Future] = []
-
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        # max_workers should be more than current max pages
-        for page_id in range(max_page):
-            futures.append(executor.submit(wrapper, page_id))
-
-    out = {}
-
-    for future in futures:
-        out.update(future.result())
-
-    return out
+    return [ContestInfo.build(contest) for contest in data]
 
 
-def resolve_from_contest_history(re_str, flags=None):
+def resolve_from_contest_history(re_str, flags=0):
     contest_history = get_content_history()
 
     re_comp = re.compile(re_str, flags=flags)
 
     results = []
 
-    for display_name, contest_id in contest_history.items():
-        if match := re_comp.match(display_name):
-            results.append(match, contest_id)
+    for contest_info in contest_history:
+        if match := re_comp.match(contest_info.name):
+            results.append((match, contest_info))
 
-    return match
+    return results
 
 
 class MultiContestStrResolveDivError(Exception):
@@ -99,7 +64,7 @@ class ContestStrResolveError(Exception):
         super().__init__(f"Unable to resolve contest string: `{contest_str}`")
 
 
-def resolve_with_div(contest_str, re_str, div=None, flags=None):
+def resolve_with_div(contest_str, re_str, short_format, div=None, flags=0):
     results = resolve_from_contest_history(re_str, flags=flags)
 
     if len(results) == 0:
@@ -108,30 +73,46 @@ def resolve_with_div(contest_str, re_str, div=None, flags=None):
     if len(results) > 1:
         raise MultiContestStrResolveDivError([match.group(0) for match, _ in results])
 
-    return results[0][1]
+    match = results[0][0]
+    contest_info = results[0][1]
+    contest_info.short_name = short_format.format(**match.groupdict())
+
+    return contest_info
 
 
-def resolve_cf(cf, div=None):
+def resolve_cf(cf, div=None) -> ContestInfo:
     div = r"\d+" if div is None else div
     return resolve_with_div(
         cf,
-        rf"Codeforces Round #(?P<contest_id>{cf}) \(.*Div. (?P<contest_div>{div}.*)\)",
+        rf"Codeforces Round #(?P<contest_id>{cf}) \(.*Div. (?P<contest_div>{div}).*\)",
+        "CF-{contest_id}-DIV-{contest_div}",
         div=div,
     )
 
 
-def resolve_ecf(ecf, div=None):
+def resolve_ecf(ecf, div=None) -> ContestInfo:
     div = r"\d+" if div is None else div
     return resolve_with_div(
         ecf,
-        rf"Educational Codeforces Round (?P<contest_id>{ecf}) \(.*Div. (?P<contest_div>{div}.*)\)",
+        rf"Educational Codeforces Round (?P<contest_id>{ecf}) \(.*Div. (?P<contest_div>{div}).*\)",
+        "ECF-{contest_id}-DIV-{contest_div}",
         div=div,
     )
 
 
-def resolve_contest(contest_str: str) -> int:
+def resolve_id(contest_id: int) -> ContestInfo:
+    contest_history = get_content_history()
+
+    for contest_info in contest_history:
+        if contest_info.id == contest_id:
+            return contest_info
+
+    raise ContestStrResolveError(str(contest_id))
+
+
+def resolve_contest(contest_str: str) -> ContestInfo:
     if contest_match := re.match(r"\d+", contest_str):
-        return int(contest_match.group(0))
+        return resolve_id(int(contest_match.group(0)))
 
     if contest_match := re.match(r"CF-(\d+)(-DIV-(\d+))?", contest_str, re.IGNORECASE):
         return resolve_cf(contest_match.group(1), contest_match.group(3))
