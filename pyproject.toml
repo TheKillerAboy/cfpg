@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cfpg"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["Annekin Meyburgh <annekin001@gmail.com>"]
 
